@@ -1,0 +1,4 @@
+ip domain-name domain.local
+no ip http server
+no ip http secure-server
+
