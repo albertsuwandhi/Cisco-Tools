@@ -107,8 +107,8 @@ def main():
         if input_select == 'q' or input_select == 'Q':
             sys.exit()
         elif input_select == '1':
-            '''create file software inventory'''
             inventory_file = 'data/inventory.xlsx'
+            template = open('template/cisco_ios_show_version.template')
             print('-'*100)
             device_list = excel_to_lists(inventory_file)
             wb = Workbook()
@@ -118,6 +118,7 @@ def main():
             ws.cell(row=1, column=2, value='IP Address')
             ws.cell(row=1, column=3, value='Part Number')
             ws.cell(row=1, column=4, value='Software Version')
+            ws.cell(row=1, column=5, value='Uptime')
             wb.save(swinvent_dir)
             row = 2
             for device in device_list:
@@ -135,8 +136,15 @@ def main():
                 netconnect.disconnect()
                 #parse output 
                 sw_inventory = sw_version(result, device["type"])
-                print('{} --> partnumber : {}, sw version : {}'.format(device['hostname'], sw_inventory[1], sw_inventory[0]))
-                log('{} --> {}\n'.format(device['hostname'], sw_inventory), data_log)
+                result_template = textfsm.TextFSM(template)
+                version_data = result_template.ParseText(result)
+                #print(version_data[0][3])
+                uptime = str(version_data[0][3])
+                #
+                print('{} --> partnumber : {}, sw version : {}, uptime : {}'.format(device['hostname'], sw_inventory[1], sw_inventory[0], uptime))
+                log('{} --> {} Uptime : {} \n'.format(device['hostname'], sw_inventory, uptime), data_log)
+                #print('{} --> partnumber : {}, sw version : {}'.format(device['hostname'], sw_inventory[1], sw_inventory[0]))
+                #log('{} --> {}\n'.format(device['hostname'], sw_inventory), data_log)
                 #print('%s : %s --> partnumber : %s, sw version : %s' %(time_log(), device['hostname'], sw_inventory[1], sw_inventory[0]))
                 #log('%s : %s --> %s\n' %(time_log(), device['hostname'], sw_inventory), data_log)
                 print('-'*100)
@@ -148,6 +156,7 @@ def main():
                 ws.cell(row=row, column=2, value=device['address'])
                 ws.cell(row=row, column=3, value=sw_inventory[1])
                 ws.cell(row=row, column=4, value=sw_inventory[0])
+                ws.cell(row=row, column=5, value=uptime)
                 wb.save(swinvent_dir)
                 row += 1
 
