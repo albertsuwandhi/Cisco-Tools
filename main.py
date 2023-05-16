@@ -252,7 +252,6 @@ def main():
                     vlan_list.append(vlan_dict)
                 wb = load_workbook(vlaninv_dir)
                 ws = wb.create_sheet(dev_hostname)
-                #wb = Workbook()
                 #ws = wb.active
                 ws.cell(row=1, column=1, value='VLAN ID')
                 ws.cell(row=1, column=2, value='VLAN Name')
@@ -268,7 +267,6 @@ def main():
                 log("Collect VLAN database for {} completed \n".format(dev_hostname), data_log)
                 
         elif input_select == '4':
-            #common_config = ["no ip http server", "no ip http secure-server"]
             config_file = "data/config.txt"
             config_f = open(config_file, "r")
             configs = config_f.read().splitlines()
@@ -287,8 +285,7 @@ def main():
                 }
 
                 netconnect = ConnectHandler(**device_info)
-                print("Connected to {} ".format(device_info["ip"]))
-                #print(netconnect.send_config_set(configs))
+                print("Connected to {} ".format(device_info["ip"])
                 #print(netconnect.send_command("wr mem"))
                 netconnect.send_config_set(configs)
                 netconnect.send_command("wr mem")
